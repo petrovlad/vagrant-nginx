@@ -96,7 +96,7 @@ tar xzf /vagrant/html.tar.gz -C "${INSTALL_PATH%/}/html/" --strip-components=1
 
 VHOSTS_PATH="${INSTALL_PATH%/}/conf/vhosts/"
 BACKEND_PATH="${VHOSTS_PATH%/}/backend.conf"
-HTPASSWD_PATH="${VHOSTS_PATH%/}/.htpasswd"
+HTPASSWD_PATH="${CONFIG_FILE_PATH%/}/.htpasswd"
 mkdir --parents "$VHOSTS_PATH"
 
 # make hidden file with users

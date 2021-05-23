@@ -96,13 +96,14 @@ tar xzf /vagrant/html.tar.gz -C "${INSTALL_PATH%/}/html/" --strip-components=1
 
 VHOSTS_PATH="${INSTALL_PATH%/}/conf/vhosts/"
 BACKEND_PATH="${VHOSTS_PATH%/}/backend.conf"
-HTPASSWD_PATH="${CONFIG_FILE_PATH%/}/.htpasswd"
+HTPASSWD_PATH="${INSTALL_PATH%/}/conf/.htpasswd"
 mkdir --parents "$VHOSTS_PATH"
 
 # make hidden file with users
 htpasswd -cb "$HTPASSWD_PATH" admin nginx
 htpasswd -b "$HTPASSWD_PATH" vladi vladi
 
+echo "Creating backend.conf..."
 IP_ADDR=$( ip -f inet a show eth1 | awk '/inet/ {print $2}' | cut -d/ -f1 )
 HOST_IP_ADDR=$1
 PORT=8080
@@ -149,7 +150,7 @@ EOT
 # set owner recursively to vagrant
 sudo chown -R "$USER_NAME":"$GROUP_NAME" "$WORK_DIR"
 
-# EDITING nginx.conf FILE
+echo "Editing nginx.conf..."
 # add vagrant user
 # nginx: [warn] the "user" directive makes sense only if the master
 sed -i 's,#\(user[[:blank:]]*\)nobody,\1'"$USER_NAME"',' "$CONFIG_FILE_PATH"
@@ -163,5 +164,9 @@ sed -i '/^    server {/,/^    }/d' "$CONFIG_FILE_PATH"
 # uncomment error logs
 sed -i 's/#\(error_log\)/\1/' "$CONFIG_FILE_PATH"
 
+echo "Extracting html.tar.gz..."
 tar xzf /vagrant/html.tar.gz -C "${INSTALL_PATH%/}/html/" --strip-components=1
 
+echo "Starting nginx.service..."
+sudo systemctl start nginx
+echo "The end :)"
